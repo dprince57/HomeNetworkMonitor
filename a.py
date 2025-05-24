@@ -24,7 +24,6 @@ COMMANDS = {
     "ip_address": "hostname -I | awk '{print $1}'"
 }
 
-# Load nodes from YAML
 def LOAD_NODES(file_path):
     if not os.path.exists(file_path):
         print(f"Error: Nodes file was not found at {file_path}")
@@ -40,7 +39,6 @@ def LOAD_NODES(file_path):
         print(f"An unexpected error occurred while loading nodes: {e}")
         return []
 
-# Live timer display with result
 class TaskTimer:
     def __init__(self, label):
         self.label = label
@@ -58,7 +56,6 @@ class TaskTimer:
         else:
             cprint(f" \u274C {elapsed:.2f}s", "red")
 
-# Run SSH commands
 def RUN_SSH_COMMANDS(node):
     with TaskTimer(node.get("HOST_NAME", "SSH Node")):
         client = paramiko.SSHClient()
@@ -76,8 +73,6 @@ def RUN_SSH_COMMANDS(node):
         finally:
             client.close()
         return stats
-
-# Run Netmiko config
 
 def RUN_NETMIKO_CONFIG(node):
     with TaskTimer(node.get("HOST_NAME", "Netmiko Node")):
@@ -99,7 +94,6 @@ def RUN_NETMIKO_CONFIG(node):
             raise
         return stats
 
-# Run local commands
 def RUN_LOCAL():
     with TaskTimer("Localhost"):
         stats = {"host": socket.gethostname(), "timestamp": datetime.utcnow().isoformat() + "Z"}
@@ -112,13 +106,9 @@ def RUN_LOCAL():
         stats["status"] = "success"
         return stats
 
-# Save log
-
 def save_log(stats):
     with open(LOG_FILE, 'a') as f:
         f.write(json.dumps(stats) + '\n')
-
-# Main
 
 def main():
     nodes = LOAD_NODES(NODES_FILE)
