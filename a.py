@@ -81,11 +81,15 @@ def RUN_NETMIKO_CONFIG(node):
             'host': node.get("HOST_NAME"),
             'username': node.get("USER_NAME"),
             'password': node.get("PASSWORD"),
+            'secret' : node.get("SECRET"),
         }
         stats = {"host": node.get("HOST_NAME", "unknown"), "timestamp": datetime.utcnow().isoformat() + "Z"}
         try:
             conn = ConnectHandler(**device)
-            output = conn.send_config_set(node.get("CONFIG_COMMANDS", []))
+            conn.enable()
+            commands = node.get("CONFIG_COMMANDS")
+            if commands:
+                output = conn.send_config_set(commands)
             conn.save_config()
             conn.disconnect()
             stats["status"] = "success"
